@@ -1,0 +1,12 @@
+main div#janela_login{
+    width: 800px;
+    margin: 100px auto 30px;
+}
+main div#janela_login form{
+    width: 470px;
+    margin: 10px auto;
+}
+main div#janela_login form h2{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: chartreuse;
+}

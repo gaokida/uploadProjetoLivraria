@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livros</title>
+</head>
+<body>
+    <div class="container m-3">
+        <form action="">
+            <input type="hidden" id="id">
+            <div class="form-group">
+                <label for="nome">Nome do Livro</label>
+                <input type="text" name="nome" id="nome" class="form-control">
+                <label for="data_publicacao">Data de Publicação</label>
+                <input type="date" name="data_publicacao" id="data_publicacao" class="form-control">
+                <label for="id_autor">ID Autor</label>
+                <select name="id_autor" id="id_autor" class="form-control">
+                    
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success" id="salvar">Salvar</button>
+            <button type="button" class="btn btn-secondary" id="alterar" style="display:none">Alterar</button>
+        </form>
+            <table class="table table-striped table-bordered mt-4">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Data de Publicação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <!-- vai receber o listar  -->
+                </tbody>
+            </table>
+
+    </div>
+
+    <script>
+
+        //Função para mostrar o id do autor(fk) por select 
+        $(function(){
+            $.getJSON("http://localhost/livraria/backend/autor/listar.php", function(data){
+                var html;
+                data.forEach(autor => {
+                    html += '<option value="'+autor.id+'">'+autor.nome+'</option>';
+                });  
+                $("#id_autor").append(html)
+            })
+        })
+    </script>
+    <script>
+        $(function(){
+            read()
+            
+                $("#salvar").on("click", function(event){
+                    event.preventDefault();
+                    var nome = $("#nome").val();
+                    var data_publicacao = $("#data_publicacao").val();
+                    var id_autor = $("#id_autor").val();
+                    $.post("http://localhost/livraria/backend/livro/inserir.php", 
+                    {"nome": nome,
+                    'data_publicacao': data_publicacao, 
+                    'id_autor': id_autor}, function(data){
+                        read();
+                        $("form").trigger("reset");
+                    })
+                })
+
+            $("#alterar").on("click", function(event) {
+                event.preventDefault();
+                 var nome = $("#nome").val();
+                var id =$("#id").val();
+                var data_publicacao = $("#data_publicacao").val();
+                var id_autor = $("#id_autor").val();
+                $.post("http://localhost/livraria/backend/livro/editar.php", {nome: nome, id: id,data_publicacao: data_publicacao, id_autor: id_autor}, function(data){
+                    read();
+                    $("#alterar").hide();
+                    $("#salvar").show();
+                    $("form").trigger("reset");
+                })
+            })
+
+            $(document).on("click", ".excluir", function (event) {
+                event.preventDefault();
+                var id = this.id
+                var excluir = confirm("Deseja excluir o registro?");
+                if (excluir)
+                    $.get("http://localhost/livraria/backend/livro/excluir.php?id=" + id, function (data) {
+                        read();
+                    });
+            })
+                                           
+                    $(document).on("click",".alterar", function(event){
+                        event.preventDefault();
+                        var id = this.id.replace("alterar","");
+                        console.log(id);
+                        $.getJSON("http://localhost/livraria/backend/livro/listarPorId.php?id="+id,function(livro){
+                            $("#nome").val(livro.nome);
+                            $("#id").val(livro.id);
+                            $("#data_publicacao").val(livro.data_publicacao);
+                            $("#id_autor").val(livro.id_autor);
+                            $("#salvar").hide();
+                            $("#alterar").show();
+
+
+                        })
+                    })
+
+                function read (){
+                    $.getJSON("http://localhost/livraria/backend/livro/listar.php",function (data){
+                        console.log(data);
+                        $("tbody").html("");
+                        data.forEach(livro =>{
+                            var html ="<tr>" + 
+                            "<td>" + livro.id + "</td>" +
+                            "<td>" + livro.nome + "</td>"+
+                            "<td>"+ livro.data_publicacao + "</td>"+
+                            "<td>" +
+                            "<button type='button' class='btn btn-primary btn-sm alterar' id='alterar"+livro.id+
+                            "'>Alterar</button>"+
+                            "<button type='button' class = 'btn btn-danger excluir btn-sm' id='"+ livro.id +
+                            "'>Excluir</button></td>"
+                        "</tr>";
+                        $("tbody").append(html);
+                        });
+                    
+                    
+                    });
+                }
+        });
+
+    </script>
+</body>
+</html>

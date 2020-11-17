@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.js"></script>
+    <title>Login</title>
+    <link href="../_css/login.css" rel="stylesheet">
+</head>
+<body>
+    <main>
+        <div id="janela_login">
+            <form>
+                <h2 class="">Tela de Login</h2>
+                    <input type="text" id = "login" name="login" placeholder="Usuario">
+                    <input type="password" id ="senha" name="senha" placeholder="Senha">
+                    <button type="submit" class="btn btn-success">Entrar</button>
+            </form>
+        </div>
+    </main>
+    <script>
+        $(function(){
+            $('form').on('submit', function(event){
+                event.preventDefault();
+                var login = $('#login').val();
+                var senha = $('#senha').val();
+                $.post("http://localhost/livraria/backend/login/logar.php", {login : login, senha: senha}, function(data){
+                    if(data.trim() == "true"){
+                        window.location.href = 'http://localhost/livraria/frontend/pages/livros.html';
+                    }else{
+                        alert ("Dados Inválidos");
+                    }
+                })
+               
+            });
+        });
+
+    </script>
+</body>
+</html>
